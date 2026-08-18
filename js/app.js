@@ -79,17 +79,11 @@ class ManagerProApp {
                 num_cnss: "CNSS789",
                 num_dossier: 1001,
                 date_embauche: "2022-03-15",
-                situation_familiale: "Marié",
-                nombre_enfant: 2,
-                date_naissance: "1990-08-22",
-                lieu_naissance: "Casablanca",
-                adresse: "78 Rue Ibn Sina, Casablanca",
                 categorie: "Ouvrier qualifié",
                 service: "Construction",
                 chantier: "Construction du Centre Commercial",
                 declarer: true,
-                equipe: "Equipe A",
-                date_record: new Date().toISOString()
+                equipe: "Equipe A"
             },
             {
                 num_cin: "CD789012",
@@ -98,17 +92,11 @@ class ManagerProApp {
                 num_cnss: "CNSS345",
                 num_dossier: 1002,
                 date_embauche: "2021-11-01",
-                situation_familiale: "Célibataire",
-                nombre_enfant: 0,
-                date_naissance: "1995-04-10",
-                lieu_naissance: "Marrakech",
-                adresse: "34 Rue Al Qods, Marrakech",
                 categorie: "Ingénieur",
                 service: "Études",
                 chantier: "Résidence Al Amal",
                 declarer: true,
-                equipe: "Equipe B",
-                date_record: new Date().toISOString()
+                equipe: "Equipe B"
             }
         ];
         
@@ -183,8 +171,6 @@ class ManagerProApp {
         }
         
         this.currentTab = tabName;
-        
-        // Update tab indicator position
         this.updateTabIndicator(activeTab);
     }
     
@@ -200,60 +186,30 @@ class ManagerProApp {
     }
     
     initButtons() {
-        // Add buttons for each module
         document.getElementById('btn-add-chantier')?.addEventListener('click', () => this.openAddChantierModal());
         document.getElementById('btn-add-salarie')?.addEventListener('click', () => this.openAddSalarieModal());
         document.getElementById('btn-add-pointage')?.addEventListener('click', () => this.openAddPointageModal());
         
-        // Export buttons
         document.getElementById('btn-export-chantiers')?.addEventListener('click', () => this.exportChantiers());
         document.getElementById('btn-export-salaries')?.addEventListener('click', () => this.exportSalaries());
         document.getElementById('btn-export-pointages')?.addEventListener('click', () => this.exportPointages());
         
-        // Print buttons
         document.getElementById('btn-print-chantiers')?.addEventListener('click', () => this.printModule('chantiers'));
         document.getElementById('btn-print-salaries')?.addEventListener('click', () => this.printModule('salaries'));
         document.getElementById('btn-print-pointages')?.addEventListener('click', () => this.printModule('pointages'));
     }
     
     initSearchFilters() {
-        // Search inputs
-        document.getElementById('search-chantier')?.addEventListener('input', (e) => {
-            this.filterChantiers(e.target.value);
-        });
+        document.getElementById('search-chantier')?.addEventListener('input', (e) => this.filterChantiers(e.target.value));
+        document.getElementById('search-salarie')?.addEventListener('input', (e) => this.filterSalaries(e.target.value));
+        document.getElementById('search-pointage')?.addEventListener('input', (e) => this.filterPointages(e.target.value));
         
-        document.getElementById('search-salarie')?.addEventListener('input', (e) => {
-            this.filterSalaries(e.target.value);
-        });
-        
-        document.getElementById('search-pointage')?.addEventListener('input', (e) => {
-            this.filterPointages(e.target.value);
-        });
-        
-        // Filter selects
-        document.getElementById('filter-chantier-statut')?.addEventListener('change', (e) => {
-            this.filterChantiersByStatus(e.target.value);
-        });
-        
-        document.getElementById('filter-salarie-chantier')?.addEventListener('change', (e) => {
-            this.filterSalariesByChantier(e.target.value);
-        });
-        
-        document.getElementById('filter-salarie-categorie')?.addEventListener('change', (e) => {
-            this.filterSalariesByCategorie(e.target.value);
-        });
-        
-        document.getElementById('filter-pointage-date')?.addEventListener('change', (e) => {
-            this.filterPointagesByDate(e.target.value);
-        });
-        
-        document.getElementById('filter-pointage-chantier')?.addEventListener('change', (e) => {
-            this.filterPointagesByChantier(e.target.value);
-        });
-        
-        document.getElementById('filter-pointage-equipe')?.addEventListener('change', (e) => {
-            this.filterPointagesByEquipe(e.target.value);
-        });
+        document.getElementById('filter-chantier-statut')?.addEventListener('change', (e) => this.renderChantiers());
+        document.getElementById('filter-salarie-chantier')?.addEventListener('change', (e) => this.filterSalariesByChantier(e.target.value));
+        document.getElementById('filter-salarie-categorie')?.addEventListener('change', (e) => this.renderSalaries());
+        document.getElementById('filter-pointage-date')?.addEventListener('change', (e) => this.filterPointagesByDate(e.target.value));
+        document.getElementById('filter-pointage-chantier')?.addEventListener('change', (e) => this.filterPointagesByChantier(e.target.value));
+        document.getElementById('filter-pointage-equipe')?.addEventListener('change', (e) => this.filterPointagesByEquipe(e.target.value));
     }
     
     initModals() {
@@ -261,30 +217,20 @@ class ManagerProApp {
         const modalClose = document.getElementById('modal-close');
         const btnCancel = document.getElementById('btn-cancel');
         
-        // Close modal
         [modalClose, btnCancel].forEach(element => {
-            if (element) {
-                element.addEventListener('click', () => this.closeModal());
-            }
+            if (element) element.addEventListener('click', () => this.closeModal());
         });
         
-        // Close on overlay click
         if (modalOverlay) {
             modalOverlay.addEventListener('click', (e) => {
-                if (e.target === modalOverlay) {
-                    this.closeModal();
-                }
+                if (e.target === modalOverlay) this.closeModal();
             });
         }
         
-        // Close on Escape key
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !modalOverlay.hidden) {
-                this.closeModal();
-            }
+            if (e.key === 'Escape' && !modalOverlay.hidden) this.closeModal();
         });
         
-        // Form submission
         const modalForm = document.getElementById('modal-form');
         if (modalForm) {
             modalForm.addEventListener('submit', (e) => {
@@ -339,10 +285,8 @@ class ManagerProApp {
         if (modalTitle) modalTitle.textContent = title;
         if (btnSubmitText) btnSubmitText.textContent = submitText;
         if (formFields) formFields.innerHTML = fields;
-        
         if (modalOverlay) modalOverlay.hidden = false;
         
-        // Focus first input
         setTimeout(() => {
             const firstInput = formFields.querySelector('input, select, textarea');
             if (firstInput) firstInput.focus();
@@ -367,14 +311,8 @@ class ManagerProApp {
             data[key] = value;
         });
         
-        // Convert numeric fields
         if (this.editedModule === 'chantiers') {
             if (data.num) data.num = parseInt(data.num);
-        } else if (this.editedModule === 'salaries') {
-            if (data.num_dossier) data.num_dossier = parseInt(data.num_dossier);
-            if (data.nombre_enfant) data.nombre_enfant = parseInt(data.nombre_enfant);
-            data.declarer = data.declarer === 'true' || data.declarer === 'on';
-            data.date_record = new Date().toISOString();
         } else if (this.editedModule === 'pointages') {
             if (data.num) data.num = parseInt(data.num);
             if (data.jour) data.jour = parseInt(data.jour);
@@ -385,7 +323,6 @@ class ManagerProApp {
         }
         
         if (this.editedItem) {
-            // Update existing item
             const index = this.data[this.editedModule].findIndex(item => 
                 this.editedModule === 'chantiers' ? item.num === this.editedItem.num :
                 this.editedModule === 'salaries' ? item.num_cin === this.editedItem.num_cin :
@@ -397,17 +334,13 @@ class ManagerProApp {
                 this.showToast(`Item updated successfully`, 'success');
             }
         } else {
-            // Add new item
             if (this.editedModule === 'chantiers') {
-                // Generate new num
                 const maxNum = Math.max(...this.data.chantiers.map(c => c.num), 0);
                 data.num = maxNum + 1;
                 this.data.chantiers.push(data);
             } else if (this.editedModule === 'salaries') {
-                // num_cin is the primary key
                 this.data.salaries.push(data);
             } else if (this.editedModule === 'pointages') {
-                // Generate new num
                 const maxNum = Math.max(...this.data.pointages.map(p => p.num), 0);
                 data.num = maxNum + 1;
                 this.data.pointages.push(data);
@@ -417,6 +350,7 @@ class ManagerProApp {
         
         this.saveData();
         this.renderAllModules();
+        this.updateChantierDropdowns();
         this.closeModal();
     }
     
@@ -440,56 +374,326 @@ class ManagerProApp {
         }
     }
     
-    getChantierFormFields(chantier = null) {
-        const isEdit = !!chantier;
+    renderAllModules() {
+        this.renderChantiers();
+        this.renderSalaries();
+        this.renderPointages();
+    }
+    
+    renderChantiers() {
+        const tbody = document.getElementById('chantiers-tbody');
+        const countEl = document.getElementById('chantiers-count');
+        if (!tbody) return;
+        
+        tbody.innerHTML = this.data.chantiers.map(chantier => `
+            <tr>
+                <td>${chantier.num}</td>
+                <td>${chantier.designation}</td>
+                <td>${chantier.chef_chantier}</td>
+                <td>${chantier.adresse}</td>
+                <td>${chantier.utilisateur}</td>
+                <td>
+                    <button class="action-btn" onclick="app.openEditChantierModal(${JSON.stringify(chantier).replace(/"/g, '&quot;')})">✏️</button>
+                    <button class="action-btn delete" onclick="app.deleteItem('chantiers', ${chantier.num})">🗑️</button>
+                </td>
+            </tr>
+        `).join('');
+        
+        if (countEl) countEl.textContent = `${this.data.chantiers.length} chantier${this.data.chantiers.length > 1 ? 's' : ''}`;
+    }
+    
+    renderSalaries() {
+        const tbody = document.getElementById('salaries-tbody');
+        const countEl = document.getElementById('salaries-count');
+        if (!tbody) return;
+        
+        tbody.innerHTML = this.data.salaries.map(salarie => `
+            <tr>
+                <td>${salarie.num_cin}</td>
+                <td>${salarie.nom}</td>
+                <td>${salarie.immatriculation}</td>
+                <td>${salarie.num_cnss}</td>
+                <td>${salarie.categorie}</td>
+                <td>${salarie.service}</td>
+                <td>${salarie.chantier}</td>
+                <td>${salarie.equipe}</td>
+                <td>${salarie.date_embauche}</td>
+                <td>${salarie.declarer ? '✓' : '✗'}</td>
+                <td>
+                    <button class="action-btn" onclick="app.openEditSalarieModal(${JSON.stringify(salarie).replace(/"/g, '&quot;')})">✏️</button>
+                    <button class="action-btn delete" onclick="app.deleteItem('salaries', '${salarie.num_cin}')">🗑️</button>
+                </td>
+            </tr>
+        `).join('');
+        
+        if (countEl) countEl.textContent = `${this.data.salaries.length} salarié${this.data.salaries.length > 1 ? 's' : ''}`;
+    }
+    
+    renderPointages() {
+        const tbody = document.getElementById('pointages-tbody');
+        const countEl = document.getElementById('pointages-count');
+        if (!tbody) return;
+        
+        tbody.innerHTML = this.data.pointages.map(pointage => `
+            <tr>
+                <td>${pointage.num}</td>
+                <td>${pointage.date}</td>
+                <td>${pointage.nom_et_prenom}</td>
+                <td>${pointage.cin}</td>
+                <td>${pointage.chantier}</td>
+                <td>${pointage.jour}</td>
+                <td>${pointage.heure_supp}</td>
+                <td>${pointage.avance}</td>
+                <td>${pointage.type_salarie}</td>
+                <td>${pointage.salaire_de_base}</td>
+                <td>${pointage.salaire_heure}</td>
+                <td>${pointage.equipe}</td>
+                <td>${pointage.matricule}</td>
+                <td>
+                    <button class="action-btn" onclick="app.openEditPointageModal(${JSON.stringify(pointage).replace(/"/g, '&quot;')})">✏️</button>
+                    <button class="action-btn delete" onclick="app.deleteItem('pointages', ${pointage.num})">🗑️</button>
+                </td>
+            </tr>
+        `).join('');
+        
+        if (countEl) countEl.textContent = `${this.data.pointages.length} pointage${this.data.pointages.length > 1 ? 's' : ''}`;
+    }
+    
+    updateChantierDropdowns() {
+        const select1 = document.getElementById('filter-salarie-chantier');
+        const select2 = document.getElementById('filter-pointage-chantier');
+        const options = this.data.chantiers.map(c => `<option value="${c.designation}">${c.designation}</option>`).join('');
+        if (select1) select1.innerHTML = '<option value="">Tous les chantiers</option>' + options;
+        if (select2) select2.innerHTML = '<option value="">Tous les chantiers</option>' + options;
+    }
+    
+    filterChantiers(query) {
+        const filtered = this.data.chantiers.filter(c => 
+            c.designation.toLowerCase().includes(query.toLowerCase()) ||
+            c.chef_chantier.toLowerCase().includes(query.toLowerCase()) ||
+            c.adresse.toLowerCase().includes(query.toLowerCase())
+        );
+        this.renderFiltered('chantiers', filtered);
+    }
+    
+    filterSalaries(query) {
+        const filtered = this.data.salaries.filter(s => 
+            s.nom.toLowerCase().includes(query.toLowerCase()) ||
+            s.num_cin.toLowerCase().includes(query.toLowerCase()) ||
+            s.immatriculation.toLowerCase().includes(query.toLowerCase())
+        );
+        this.renderFiltered('salaries', filtered);
+    }
+    
+    filterPointages(query) {
+        const filtered = this.data.pointages.filter(p => 
+            p.nom_et_prenom.toLowerCase().includes(query.toLowerCase()) ||
+            p.cin.toLowerCase().includes(query.toLowerCase()) ||
+            p.chantier.toLowerCase().includes(query.toLowerCase())
+        );
+        this.renderFiltered('pointages', filtered);
+    }
+    
+    filterPointagesByDate(date) {
+        if (!date) { this.renderPointages(); return; }
+        const filtered = this.data.pointages.filter(p => p.date === date);
+        this.renderFiltered('pointages', filtered);
+    }
+    
+    filterPointagesByChantier(chantier) {
+        if (!chantier) { this.renderPointages(); return; }
+        const filtered = this.data.pointages.filter(p => p.chantier === chantier);
+        this.renderFiltered('pointages', filtered);
+    }
+    
+    filterPointagesByEquipe(equipe) {
+        if (!equipe) { this.renderPointages(); return; }
+        const filtered = this.data.pointages.filter(p => p.equipe === equipe);
+        this.renderFiltered('pointages', filtered);
+    }
+    
+    filterSalariesByChantier(chantier) {
+        if (!chantier) { this.renderSalaries(); return; }
+        const filtered = this.data.salaries.filter(s => s.chantier === chantier);
+        this.renderFiltered('salaries', filtered);
+    }
+    
+    renderFiltered(module, data) {
+        const methods = {
+            chantiers: (data) => this.renderFilteredChantiers(data),
+            salaries: (data) => this.renderFilteredSalaries(data),
+            pointages: (data) => this.renderFilteredPointages(data)
+        };
+        if (methods[module]) methods[module](data);
+    }
+    
+    renderFilteredChantiers(data) {
+        const tbody = document.getElementById('chantiers-tbody');
+        if (!tbody) return;
+        tbody.innerHTML = data.map(c => `
+            <tr>
+                <td>${c.num}</td>
+                <td>${c.designation}</td>
+                <td>${c.chef_chantier}</td>
+                <td>${c.adresse}</td>
+                <td>${c.utilisateur}</td>
+                <td>
+                    <button class="action-btn" onclick="app.openEditChantierModal(${JSON.stringify(c).replace(/"/g, '&quot;')})">✏️</button>
+                    <button class="action-btn delete" onclick="app.deleteItem('chantiers', ${c.num})">🗑️</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+    
+    renderFilteredSalaries(data) {
+        const tbody = document.getElementById('salaries-tbody');
+        if (!tbody) return;
+        tbody.innerHTML = data.map(s => `
+            <tr>
+                <td>${s.num_cin}</td>
+                <td>${s.nom}</td>
+                <td>${s.immatriculation}</td>
+                <td>${s.num_cnss}</td>
+                <td>${s.categorie}</td>
+                <td>${s.service}</td>
+                <td>${s.chantier}</td>
+                <td>${s.equipe}</td>
+                <td>${s.date_embauche}</td>
+                <td>${s.declarer ? '✓' : '✗'}</td>
+                <td>
+                    <button class="action-btn" onclick="app.openEditSalarieModal(${JSON.stringify(s).replace(/"/g, '&quot;')})">✏️</button>
+                    <button class="action-btn delete" onclick="app.deleteItem('salaries', '${s.num_cin}')">🗑️</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+    
+    renderFilteredPointages(data) {
+        const tbody = document.getElementById('pointages-tbody');
+        if (!tbody) return;
+        tbody.innerHTML = data.map(p => `
+            <tr>
+                <td>${p.num}</td>
+                <td>${p.date}</td>
+                <td>${p.nom_et_prenom}</td>
+                <td>${p.cin}</td>
+                <td>${p.chantier}</td>
+                <td>${p.jour}</td>
+                <td>${p.heure_supp}</td>
+                <td>${p.avance}</td>
+                <td>${p.type_salarie}</td>
+                <td>${p.salaire_de_base}</td>
+                <td>${p.salaire_heure}</td>
+                <td>${p.equipe}</td>
+                <td>${p.matricule}</td>
+                <td>
+                    <button class="action-btn" onclick="app.openEditPointageModal(${JSON.stringify(p).replace(/"/g, '&quot;')})">✏️</button>
+                    <button class="action-btn delete" onclick="app.deleteItem('pointages', ${p.num})">🗑️</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+    
+    exportChantiers() { this.exportToCSV('chantiers', this.data.chantiers); }
+    exportSalaries() { this.exportToCSV('salaries', this.data.salaries); }
+    exportPointages() { this.exportToCSV('pointages', this.data.pointages); }
+    
+    exportToCSV(filename, data) {
+        if (data.length === 0) { this.showToast('No data to export', 'warning'); return; }
+        const headers = Object.keys(data[0]);
+        let csv = headers.join(',') + '\n';
+        data.forEach(row => {
+            csv += headers.map(h => typeof row[h] === 'string' && row[h].includes(',') ? `"${row[h]}"` : row[h]).join(',') + '\n';
+        });
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${filename}_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.showToast(`${filename} exported successfully`, 'success');
+    }
+    
+    printModule(module) { window.print(); }
+    
+    showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        const icons = { success: '✓', error: '✗', warning: '⚠', info: 'ℹ' };
+        toast.innerHTML = `
+            <span class="toast-icon">${icons[type]}</span>
+            <span class="toast-message">${message}</span>
+            <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
+    getChantierFormFields(c = null) {
+        const isEdit = !!c;
         return `
             <div class="form-group">
-                <label for="form-num">N°</label>
-                <input type="number" id="form-num" name="num" ${isEdit ? 'value="' + chantier.num + '"' : ''} ${isEdit ? 'readonly' : ''} required>
+                <label>N°</label>
+                <input type="number" name="num" ${isEdit ? `value="${c.num}" readonly` : ''} required>
             </div>
             <div class="form-group">
-                <label for="form-designation">Désignation</label>
-                <input type="text" id="form-designation" name="designation" value="${isEdit ? chantier.designation : ''}" required maxlength="300">
+                <label>Désignation</label>
+                <input type="text" name="designation" value="${isEdit ? c.designation : ''}" required maxlength="300">
             </div>
             <div class="form-group">
-                <label for="form-chef_chantier">Chef de Chantier</label>
-                <input type="text" id="form-chef_chantier" name="chef_chantier" value="${isEdit ? chantier.chef_chantier : ''}" required maxlength="200">
+                <label>Chef de Chantier</label>
+                <input type="text" name="chef_chantier" value="${isEdit ? c.chef_chantier : ''}" required maxlength="200">
             </div>
             <div class="form-group">
-                <label for="form-adresse">Adresse</label>
-                <input type="text" id="form-adresse" name="adresse" value="${isEdit ? chantier.adresse : ''}" required maxlength="300">
+                <label>Adresse</label>
+                <input type="text" name="adresse" value="${isEdit ? c.adresse : ''}" required maxlength="300">
             </div>
             <div class="form-group">
-                <label for="form-utilisateur">Utilisateur</label>
-                <input type="text" id="form-utilisateur" name="utilisateur" value="${isEdit ? chantier.utilisateur : ''}" required maxlength="50">
+                <label>Utilisateur</label>
+                <input type="text" name="utilisateur" value="${isEdit ? c.utilisateur : ''}" required maxlength="50">
             </div>
         `;
     }
     
-    getSalarieFormFields(salarie = null) {
-        const isEdit = !!salarie;
+    getSalarieFormFields(s = null) {
+        const isEdit = !!s;
         return `
-            <div class="form-group">
-                <label for="form-num_cin">CIN</label>
-                <input type="text" id="form-num_cin" name="num_cin" value="${isEdit ? salarie.num_cin : ''}" ${isEdit ? 'readonly' : ''} required maxlength="100">
-            </div>
-            <div class="form-group">
-                <label for="form-nom">Nom</label>
-                <input type="text" id="form-nom" name="nom" value="${isEdit ? salarie.nom : ''}" required maxlength="100">
-            </div>
-            <div class="form-group">
-                <label for="form-immatriculation">Immatriculation</label>
-                <input type="text" id="form-immatriculation" name="immatriculation" value="${isEdit ? salarie.immatriculation : ''}" maxlength="100">
-            </div>
-            <div class="form-group">
-                <label for="form-num_cnss">CNSS</label>
-                <input type="text" id="form-num_cnss" name="num_cnss" value="${isEdit ? salarie.num_cnss : ''}" maxlength="100">
-            </div>
-            <div class="form-group">
-                <label for="form-num_dossier">N° Dossier</label>
-                <input type="number" id="form-num_dossier" name="num_dossier" value="${isEdit ? salarie.num_dossier : ''}" required>
-            </div>
-            <div class="form-group">
-                <label for="form-date_embauche">Date d'embauche</label>
-                <input type="date" id="form-date_embauche" name="date_embauche" value="${isEdit ? salarie.date_embauche : ''}" required>
-            </div
+            <div class="form-group"><label>CIN</label><input type="text" name="num_cin" value="${isEdit ? s.num_cin : ''}" ${isEdit ? 'readonly' : ''} required></div>
+            <div class="form-group"><label>Nom</label><input type="text" name="nom" value="${isEdit ? s.nom : ''}" required></div>
+            <div class="form-group"><label>Immatriculation</label><input type="text" name="immatriculation" value="${isEdit ? s.immatriculation : ''}"></div>
+            <div class="form-group"><label>CNSS</label><input type="text" name="num_cnss" value="${isEdit ? s.num_cnss : ''}"></div>
+            <div class="form-group"><label>N° Dossier</label><input type="number" name="num_dossier" value="${isEdit ? s.num_dossier : ''}" required></div>
+            <div class="form-group"><label>Date Embauche</label><input type="date" name="date_embauche" value="${isEdit ? s.date_embauche : ''}" required></div>
+            <div class="form-group"><label>Catégorie</label><input type="text" name="categorie" value="${isEdit ? s.categorie : ''}" required></div>
+            <div class="form-group"><label>Service</label><input type="text" name="service" value="${isEdit ? s.service : ''}" required></div>
+            <div class="form-group"><label>Chantier</label><input type="text" name="chantier" value="${isEdit ? s.chantier : ''}" required></div>
+            <div class="form-group"><label>Équipe</label><input type="text" name="equipe" value="${isEdit ? s.equipe : ''}" required></div>
+        `;
+    }
+    
+    getPointageFormFields(p = null) {
+        const isEdit = !!p;
+        return `
+            <div class="form-group"><label>Date</label><input type="date" name="date" value="${isEdit ? p.date : ''}" required></div>
+            <div class="form-group"><label>Nom & Prénom</label><input type="text" name="nom_et_prenom" value="${isEdit ? p.nom_et_prenom : ''}" required></div>
+            <div class="form-group"><label>CIN</label><input type="text" name="cin" value="${isEdit ? p.cin : ''}" required></div>
+            <div class="form-group"><label>Chantier</label><input type="text" name="chantier" value="${isEdit ? p.chantier : ''}" required></div>
+            <div class="form-group"><label>Jour</label><input type="number" name="jour" value="${isEdit ? p.jour : ''}" required></div>
+            <div class="form-group"><label>Heures Supplémentaires</label><input type="number" name="heure_supp" value="${isEdit ? p.heure_supp : ''}" step="0.5"></div>
+            <div class="form-group"><label>Avance</label><input type="number" name="avance" value="${isEdit ? p.avance : ''}" step="0.01"></div>
+            <div class="form-group"><label>Type de Salarié</label><input type="text" name="type_salarie" value="${isEdit ? p.type_salarie : ''}" required></div>
+            <div class="form-group"><label>Salaire Base</label><input type="number" name="salaire_de_base" value="${isEdit ? p.salaire_de_base : ''}" step="0.01" required></div>
+            <div class="form-group"><label>Salaire/Heure</label><input type="number" name="salaire_heure" value="${isEdit ? p.salaire_heure : ''}" step="0.01" required></div>
+            <div class="form-group"><label>Équipe</label><input type="text" name="equipe" value="${isEdit ? p.equipe : ''}" required></div>
+            <div class="form-group"><label>Matricule</label><input type="text" name="matricule" value="${isEdit ? p.matricule : ''}" required></div>
+        `;
+    }
+}
+
+let app;
+document.addEventListener('DOMContentLoaded', () => {
+    app = new ManagerProApp();
+});
