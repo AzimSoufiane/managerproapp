@@ -339,15 +339,20 @@ body {
         0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.leather-panel {
-    background: var(--leather-light);
-}
-
 .filter-row {
     display: flex;
     gap: 16px;
     align-items: flex-end;
     flex-wrap: wrap;
+}
+
+.filter-row .input-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-row select {
+    min-width: 160px;
 }
 
 .tactile-input,
@@ -592,11 +597,13 @@ body {
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
+    pointer-events: none;
 }
 
-.modal-overlay[hidden="false"] {
+.modal-overlay.active {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
 }
 
 .modal-paper {
@@ -669,43 +676,6 @@ body {
     display: grid;
     gap: 18px;
     margin-bottom: 25px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.form-group label {
-    font-weight: 600;
-    color: var(--metallic-dark);
-    font-size: 0.95em;
-    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8);
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-    background: var(--parchment);
-    border: 2px solid var(--ledger-line);
-    border-radius: 4px;
-    padding: 12px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.95em;
-    color: var(--metallic-dark);
-    transition: all 0.2s ease;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: var(--leather-medium);
-    box-shadow: 
-        inset 0 1px 3px rgba(0, 0, 0, 0.1),
-        0 0 0 3px rgba(107, 66, 53, 0.2);
 }
 
 .modal-actions {
@@ -836,6 +806,197 @@ body {
         opacity: 0;
         transform: translateX(20px);
     }
+}
+
+/* Body */
+.skeuo-body {
+    background: var(--parchment);
+}
+
+/* Form Groups */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-weight: 600;
+    font-size: 0.9em;
+    color: var(--metallic-dark);
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    background: var(--parchment);
+    border: 2px solid var(--ledger-line);
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.95em;
+    color: var(--metallic-dark);
+    transition: all 0.2s ease;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--leather-medium);
+    box-shadow:
+        inset 0 1px 3px rgba(0, 0, 0, 0.1),
+        0 0 0 3px rgba(107, 66, 53, 0.2);
+}
+
+.form-group input[readonly] {
+    background: var(--ledger-line);
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Leather Panel */
+.leather-panel {
+    background: linear-gradient(to bottom, var(--leather-light), var(--leather-medium));
+    border: 2px solid var(--leather-dark);
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.15),
+        0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* No Data State */
+.no-data {
+    text-align: center;
+    padding: 40px 20px !important;
+    color: var(--metallic-light);
+    font-style: italic;
+    font-size: 1.1em;
+}
+
+/* Actions Cell */
+.actions-cell {
+    white-space: nowrap;
+    text-align: center !important;
+}
+
+/* Action Buttons */
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 2px solid var(--ledger-line);
+    border-radius: 6px;
+    background: var(--parchment);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    margin: 0 2px;
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.btn-action:active {
+    transform: translateY(1px);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-edit {
+    border-color: var(--leather-light);
+}
+
+.btn-edit:hover {
+    background: rgba(107, 66, 53, 0.1);
+    border-color: var(--leather-medium);
+}
+
+.btn-delete {
+    border-color: #8b2626;
+}
+
+.btn-delete:hover {
+    background: rgba(139, 38, 38, 0.1);
+    border-color: #8b2626;
+}
+
+.action-icon {
+    font-size: 1em;
+    line-height: 1;
+}
+
+/* Input Group */
+.input-group {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Ledger Input */
+.ledger-input {
+    background: var(--parchment);
+    border: 2px solid var(--ledger-line);
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.95em;
+    color: var(--metallic-dark);
+    transition: all 0.2s ease;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.ledger-input:focus {
+    outline: none;
+    border-color: var(--leather-medium);
+    box-shadow:
+        inset 0 1px 3px rgba(0, 0, 0, 0.1),
+        0 0 0 3px rgba(107, 66, 53, 0.2);
+}
+
+/* Ledger Select */
+.ledger-select {
+    background: var(--parchment);
+    border: 2px solid var(--ledger-line);
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.95em;
+    color: var(--metallic-dark);
+    transition: all 0.2s ease;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.ledger-select:focus {
+    outline: none;
+    border-color: var(--leather-medium);
+    box-shadow:
+        inset 0 1px 3px rgba(0, 0, 0, 0.1),
+        0 0 0 3px rgba(107, 66, 53, 0.2);
+}
+
+/* Page Info */
+.page-info {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85em;
+    color: var(--metallic-medium);
+    font-weight: 500;
 }
 
 /* Responsive Design */
@@ -1040,34 +1201,24 @@ body {
 
 /* Loading States */
 .loading {
-    opacity: 0.6;
+    opacity: 0.7;
     pointer-events: none;
 }
 
-.action-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
-    background: var(--leather-medium);
-    color: var(--parchment);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9em;
-    font-weight: 600;
-    transition: all 0.2s ease;
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border: 4px solid var(--ledger-line);
+    border-top-color: var(--leather-medium);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
 
-.action-btn:hover {
-    background: var(--leather-light);
-    transform: translateY(-1px);
-}
-
-.action-btn.delete {
-    background: #8b2626;
-}
-
-.action-btn.delete:hover {
-    background: #a33232;
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
