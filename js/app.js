@@ -17,19 +17,12 @@ class ManagerProApp {
     }
     
     init() {
-        // Load data from localStorage or initialize with sample data
         this.loadData();
-        
-        // Initialize event listeners
         this.initTabNavigation();
         this.initButtons();
         this.initSearchFilters();
         this.initModals();
-        
-        // Render initial data
         this.renderAllModules();
-        
-        // Initialize chantier dropdowns for salarié and pointage modules
         this.updateChantierDropdowns();
     }
     
@@ -52,7 +45,6 @@ class ManagerProApp {
     }
     
     initSampleData() {
-        // Sample chantier data
         this.data.chantiers = [
             {
                 num: 1,
@@ -70,7 +62,6 @@ class ManagerProApp {
             }
         ];
         
-        // Sample salarié data
         this.data.salaries = [
             {
                 num_cin: "AB123456",
@@ -79,11 +70,17 @@ class ManagerProApp {
                 num_cnss: "CNSS789",
                 num_dossier: 1001,
                 date_embauche: "2022-03-15",
+                situation_familiale: "Marié",
+                nombre_enfant: 2,
+                date_naissance: "1990-08-22",
+                lieu_naissance: "Casablanca",
+                adresse: "78 Rue Ibn Sina, Casablanca",
                 categorie: "Ouvrier qualifié",
                 service: "Construction",
                 chantier: "Construction du Centre Commercial",
                 declarer: true,
-                equipe: "Equipe A"
+                equipe: "Equipe A",
+                date_record: new Date().toISOString()
             },
             {
                 num_cin: "CD789012",
@@ -92,15 +89,20 @@ class ManagerProApp {
                 num_cnss: "CNSS345",
                 num_dossier: 1002,
                 date_embauche: "2021-11-01",
+                situation_familiale: "Célibataire",
+                nombre_enfant: 0,
+                date_naissance: "1995-04-10",
+                lieu_naissance: "Marrakech",
+                adresse: "34 Rue Al Qods, Marrakech",
                 categorie: "Ingénieur",
                 service: "Études",
                 chantier: "Résidence Al Amal",
                 declarer: true,
-                equipe: "Equipe B"
+                equipe: "Equipe B",
+                date_record: new Date().toISOString()
             }
         ];
         
-        // Sample pointage data
         this.data.pointages = [
             {
                 num: 1,
@@ -148,7 +150,6 @@ class ManagerProApp {
     }
     
     switchTab(tabName) {
-        // Update active tab
         document.querySelectorAll('.binder-tab').forEach(tab => {
             tab.classList.remove('active');
             tab.setAttribute('aria-selected', 'false');
@@ -160,7 +161,6 @@ class ManagerProApp {
             activeTab.setAttribute('aria-selected', 'true');
         }
         
-        // Update active panel
         document.querySelectorAll('.module-panel').forEach(panel => {
             panel.hidden = true;
         });
@@ -200,16 +200,41 @@ class ManagerProApp {
     }
     
     initSearchFilters() {
-        document.getElementById('search-chantier')?.addEventListener('input', (e) => this.filterChantiers(e.target.value));
-        document.getElementById('search-salarie')?.addEventListener('input', (e) => this.filterSalaries(e.target.value));
-        document.getElementById('search-pointage')?.addEventListener('input', (e) => this.filterPointages(e.target.value));
+        document.getElementById('search-chantier')?.addEventListener('input', (e) => {
+            this.filterChantiers(e.target.value);
+        });
         
-        document.getElementById('filter-chantier-statut')?.addEventListener('change', (e) => this.renderChantiers());
-        document.getElementById('filter-salarie-chantier')?.addEventListener('change', (e) => this.filterSalariesByChantier(e.target.value));
-        document.getElementById('filter-salarie-categorie')?.addEventListener('change', (e) => this.renderSalaries());
-        document.getElementById('filter-pointage-date')?.addEventListener('change', (e) => this.filterPointagesByDate(e.target.value));
-        document.getElementById('filter-pointage-chantier')?.addEventListener('change', (e) => this.filterPointagesByChantier(e.target.value));
-        document.getElementById('filter-pointage-equipe')?.addEventListener('change', (e) => this.filterPointagesByEquipe(e.target.value));
+        document.getElementById('search-salarie')?.addEventListener('input', (e) => {
+            this.filterSalaries(e.target.value);
+        });
+        
+        document.getElementById('search-pointage')?.addEventListener('input', (e) => {
+            this.filterPointages(e.target.value);
+        });
+        
+        document.getElementById('filter-chantier-statut')?.addEventListener('change', (e) => {
+            this.filterChantiersByStatus(e.target.value);
+        });
+        
+        document.getElementById('filter-salarie-chantier')?.addEventListener('change', (e) => {
+            this.filterSalariesByChantier(e.target.value);
+        });
+        
+        document.getElementById('filter-salarie-categorie')?.addEventListener('change', (e) => {
+            this.filterSalariesByCategorie(e.target.value);
+        });
+        
+        document.getElementById('filter-pointage-date')?.addEventListener('change', (e) => {
+            this.filterPointagesByDate(e.target.value);
+        });
+        
+        document.getElementById('filter-pointage-chantier')?.addEventListener('change', (e) => {
+            this.filterPointagesByChantier(e.target.value);
+        });
+        
+        document.getElementById('filter-pointage-equipe')?.addEventListener('change', (e) => {
+            this.filterPointagesByEquipe(e.target.value);
+        });
     }
     
     initModals() {
@@ -218,17 +243,23 @@ class ManagerProApp {
         const btnCancel = document.getElementById('btn-cancel');
         
         [modalClose, btnCancel].forEach(element => {
-            if (element) element.addEventListener('click', () => this.closeModal());
+            if (element) {
+                element.addEventListener('click', () => this.closeModal());
+            }
         });
         
         if (modalOverlay) {
             modalOverlay.addEventListener('click', (e) => {
-                if (e.target === modalOverlay) this.closeModal();
+                if (e.target === modalOverlay) {
+                    this.closeModal();
+                }
             });
         }
         
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !modalOverlay.hidden) this.closeModal();
+            if (e.key === 'Escape' && modalOverlay && modalOverlay.classList.contains('active')) {
+                this.closeModal();
+            }
         });
         
         const modalForm = document.getElementById('modal-form');
@@ -285,7 +316,11 @@ class ManagerProApp {
         if (modalTitle) modalTitle.textContent = title;
         if (btnSubmitText) btnSubmitText.textContent = submitText;
         if (formFields) formFields.innerHTML = fields;
-        if (modalOverlay) modalOverlay.hidden = false;
+        
+        if (modalOverlay) {
+            modalOverlay.hidden = false;
+            modalOverlay.classList.add('active');
+        }
         
         setTimeout(() => {
             const firstInput = formFields.querySelector('input, select, textarea');
@@ -295,7 +330,10 @@ class ManagerProApp {
     
     closeModal() {
         const modalOverlay = document.getElementById('modal-overlay');
-        if (modalOverlay) modalOverlay.hidden = true;
+        if (modalOverlay) {
+            modalOverlay.classList.remove('active');
+            modalOverlay.hidden = true;
+        }
         this.editedItem = null;
         this.editedModule = null;
     }
@@ -313,6 +351,11 @@ class ManagerProApp {
         
         if (this.editedModule === 'chantiers') {
             if (data.num) data.num = parseInt(data.num);
+        } else if (this.editedModule === 'salaries') {
+            if (data.num_dossier) data.num_dossier = parseInt(data.num_dossier);
+            if (data.nombre_enfant) data.nombre_enfant = parseInt(data.nombre_enfant);
+            data.declarer = data.declarer === 'true' || data.declarer === 'on';
+            data.date_record = new Date().toISOString();
         } else if (this.editedModule === 'pointages') {
             if (data.num) data.num = parseInt(data.num);
             if (data.jour) data.jour = parseInt(data.jour);
@@ -350,7 +393,6 @@ class ManagerProApp {
         
         this.saveData();
         this.renderAllModules();
-        this.updateChantierDropdowns();
         this.closeModal();
     }
     
@@ -374,41 +416,324 @@ class ManagerProApp {
         }
     }
     
-    renderAllModules() {
-        this.renderChantiers();
-        this.renderSalaries();
-        this.renderPointages();
+    getChantierFormFields(chantier = null) {
+        const isEdit = !!chantier;
+        return `
+            <div class="form-group">
+                <label for="form-num">N°</label>
+                <input type="number" id="form-num" name="num" ${isEdit ? 'value="' + chantier.num + '"' : ''} ${isEdit ? 'readonly' : ''} required>
+            </div>
+            <div class="form-group">
+                <label for="form-designation">Désignation</label>
+                <input type="text" id="form-designation" name="designation" value="${isEdit ? chantier.designation : ''}" required maxlength="300">
+            </div>
+            <div class="form-group">
+                <label for="form-chef_chantier">Chef de Chantier</label>
+                <input type="text" id="form-chef_chantier" name="chef_chantier" value="${isEdit ? chantier.chef_chantier : ''}" required maxlength="200">
+            </div>
+            <div class="form-group">
+                <label for="form-adresse">Adresse</label>
+                <input type="text" id="form-adresse" name="adresse" value="${isEdit ? chantier.adresse : ''}" required maxlength="300">
+            </div>
+            <div class="form-group">
+                <label for="form-utilisateur">Utilisateur</label>
+                <input type="text" id="form-utilisateur" name="utilisateur" value="${isEdit ? chantier.utilisateur : ''}" required maxlength="50">
+            </div>
+        `;
     }
     
-    renderChantiers() {
+    getSalarieFormFields(salarie = null) {
+        const isEdit = !!salarie;
+        return `
+            <div class="form-group">
+                <label for="form-num_cin">CIN</label>
+                <input type="text" id="form-num_cin" name="num_cin" value="${isEdit ? salarie.num_cin : ''}" ${isEdit ? 'readonly' : ''} required maxlength="100">
+            </div>
+            <div class="form-group">
+                <label for="form-nom">Nom</label>
+                <input type="text" id="form-nom" name="nom" value="${isEdit ? salarie.nom : ''}" required maxlength="100">
+            </div>
+            <div class="form-group">
+                <label for="form-immatriculation">Immatriculation</label>
+                <input type="text" id="form-immatriculation" name="immatriculation" value="${isEdit ? salarie.immatriculation : ''}" maxlength="100">
+            </div>
+            <div class="form-group">
+                <label for="form-num_cnss">CNSS</label>
+                <input type="text" id="form-num_cnss" name="num_cnss" value="${isEdit ? salarie.num_cnss : ''}" maxlength="100">
+            </div>
+            <div class="form-group">
+                <label for="form-num_dossier">N° Dossier</label>
+                <input type="number" id="form-num_dossier" name="num_dossier" value="${isEdit ? salarie.num_dossier : ''}" required>
+            </div>
+            <div class="form-group">
+                <label for="form-date_embauche">Date d'embauche</label>
+                <input type="date" id="form-date_embauche" name="date_embauche" value="${isEdit ? salarie.date_embauche : ''}" required>
+            </div>
+            <div class="form-group">
+                <label for="form-situation_familiale">Situation familiale</label>
+                <input type="text" id="form-situation_familiale" name="situation_familiale" value="${isEdit ? salarie.situation_familiale : ''}" maxlength="100">
+            </div>
+            <div class="form-group">
+                <label for="form-nombre_enfant">Nombre d'enfants</label>
+                <input type="number" id="form-nombre_enfant" name="nombre_enfant" value="${isEdit ? salarie.nombre_enfant : ''}" min="0">
+            </div>
+            <div class="form-group">
+                <label for="form-date_naissance">Date de naissance</label>
+                <input type="date" id="form-date_naissance" name="date_naissance" value="${isEdit ? salarie.date_naissance : ''}" required>
+            </div>
+            <div class="form-group">
+                <label for="form-lieu_naissance">Lieu de naissance</label>
+                <input type="text" id="form-lieu_naissance" name="lieu_naissance" value="${isEdit ? salarie.lieu_naissance : ''}" maxlength="100">
+            </div>
+            <div class="form-group">
+                <label for="form-adresse">Adresse</label>
+                <input type="text" id="form-adresse" name="adresse" value="${isEdit ? salarie.adresse : ''}" maxlength="200">
+            </div>
+            <div class="form-group">
+                <label for="form-categorie">Catégorie</label>
+                <input type="text" id="form-categorie" name="categorie" value="${isEdit ? salarie.categorie : ''}" maxlength="100">
+            </div>
+            <div class="form-group">
+                <label for="form-service">Service</label>
+                <input type="text" id="form-service" name="service" value="${isEdit ? salarie.service : ''}" maxlength="100">
+            </div>
+            <div class="form-group">
+                <label for="form-chantier">Chantier</label>
+                <select id="form-chantier" name="chantier" required>
+                    <option value="">Sélectionner un chantier</option>
+                    ${this.data.chantiers.map(c => `
+                        <option value="${c.designation}" ${isEdit && salarie.chantier === c.designation ? 'selected' : ''}>
+                            ${c.designation}
+                        </option>
+                    `).join('')}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="form-declarer">Déclaré</label>
+                <select id="form-declarer" name="declarer">
+                    <option value="true" ${isEdit && salarie.declarer === true ? 'selected' : ''}>Oui</option>
+                    <option value="false" ${isEdit && salarie.declarer === false ? 'selected' : ''}>Non</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="form-equipe">Équipe</label>
+                <input type="text" id="form-equipe" name="equipe" value="${isEdit ? salarie.equipe : ''}" maxlength="333">
+            </div>
+        `;
+    }
+    
+    getPointageFormFields(pointage = null) {
+        const isEdit = !!pointage;
+        return `
+            <div class="form-group">
+                <label for="form-num">N°</label>
+                <input type="number" id="form-num" name="num" ${isEdit ? 'value="' + pointage.num + '"' : ''} ${isEdit ? 'readonly' : ''} required>
+            </div>
+            <div class="form-group">
+                <label for="form-date">Date</label>
+                <input type="date" id="form-date" name="date" value="${isEdit ? pointage.date : ''}" required>
+            </div>
+            <div class="form-group">
+                <label for="form-nom_et_prenom">Nom & Prénom</label>
+                <input type="text" id="form-nom_et_prenom" name="nom_et_prenom" value="${isEdit ? pointage.nom_et_prenom : ''}" maxlength="555">
+            </div>
+            <div class="form-group">
+                <label for="form-cin">CIN</label>
+                <input type="text" id="form-cin" name="cin" value="${isEdit ? pointage.cin : ''}" maxlength="555">
+            </div>
+            <div class="form-group">
+                <label for="form-chantier">Chantier</label>
+                <select id="form-chantier" name="chantier" required>
+                    <option value="">Sélectionner un chantier</option>
+                    ${this.data.chantiers.map(c => `
+                        <option value="${c.designation}" ${isEdit && pointage.chantier === c.designation ? 'selected' : ''}>
+                            ${c.designation}
+                        </option>
+                    `).join('')}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="form-jour">Jour</label>
+                <input type="number" id="form-jour" name="jour" value="${isEdit ? pointage.jour : ''}" required min="1" max="31">
+            </div>
+            <div class="form-group">
+                <label for="form-heure_supp">Heures Supplémentaires</label>
+                <input type="number" id="form-heure_supp" name="heure_supp" value="${isEdit ? pointage.heure_supp : ''}" min="0" step="0.5">
+            </div>
+            <div class="form-group">
+                <label for="form-avance">Avance</label>
+                <input type="number" id="form-avance" name="avance" value="${isEdit ? pointage.avance : ''}" min="0" step="0.01">
+            </div>
+            <div class="form-group">
+                <label for="form-type_salarie">Type de Salarié</label>
+                <input type="text" id="form-type_salarie" name="type_salarie" value="${isEdit ? pointage.type_salarie : ''}" maxlength="555">
+            </div>
+            <div class="form-group">
+                <label for="form-salaire_de_base">Salaire de Base</label>
+                <input type="number" id="form-salaire_de_base" name="salaire_de_base" value="${isEdit ? pointage.salaire_de_base : ''}" min="0" step="0.01">
+            </div>
+            <div class="form-group">
+                <label for="form-salaire_heure">Salaire Horaire</label>
+                <input type="number" id="form-salaire_heure" name="salaire_heure" value="${isEdit ? pointage.salaire_heure : ''}" min="0" step="0.01">
+            </div>
+            <div class="form-group">
+                <label for="form-equipe">Équipe</label>
+                <input type="text" id="form-equipe" name="equipe" value="${isEdit ? pointage.equipe : ''}" maxlength="777">
+            </div>
+            <div class="form-group">
+                <label for="form-matricule">Matricule</label>
+                <input type="text" id="form-matricule" name="matricule" value="${isEdit ? pointage.matricule : ''}" maxlength="555">
+            </div>
+        `;
+    }
+    
+    filterChantiers(searchTerm) {
+        this.renderChantiersTable(this.data.chantiers.filter(chantier =>
+            chantier.designation.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            chantier.chef_chantier.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            chantier.adresse.toLowerCase().includes(searchTerm.toLowerCase())
+        ));
+    }
+    
+    filterChantiersByStatus(status) {
+        this.renderChantiersTable(this.data.chantiers);
+    }
+    
+    filterSalaries(searchTerm) {
+        this.renderSalariesTable(this.data.salaries.filter(salarie =>
+            salarie.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            salarie.num_cin.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            salarie.immatriculation.toLowerCase().includes(searchTerm.toLowerCase())
+        ));
+    }
+    
+    filterSalariesByChantier(chantier) {
+        if (!chantier) {
+            this.renderSalariesTable(this.data.salaries);
+        } else {
+            this.renderSalariesTable(this.data.salaries.filter(salarie => salarie.chantier === chantier));
+        }
+    }
+    
+    filterSalariesByCategorie(categorie) {
+        if (!categorie) {
+            this.renderSalariesTable(this.data.salaries);
+        } else {
+            this.renderSalariesTable(this.data.salaries.filter(salarie => salarie.categorie === categorie));
+        }
+    }
+    
+    filterPointages(searchTerm) {
+        this.renderPointagesTable(this.data.pointages.filter(pointage =>
+            pointage.nom_et_prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            pointage.cin.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            pointage.chantier.toLowerCase().includes(searchTerm.toLowerCase())
+        ));
+    }
+    
+    filterPointagesByDate(date) {
+        if (!date) {
+            this.renderPointagesTable(this.data.pointages);
+        } else {
+            this.renderPointagesTable(this.data.pointages.filter(pointage => pointage.date === date));
+        }
+    }
+    
+    filterPointagesByChantier(chantier) {
+        if (!chantier) {
+            this.renderPointagesTable(this.data.pointages);
+        } else {
+            this.renderPointagesTable(this.data.pointages.filter(pointage => pointage.chantier === chantier));
+        }
+    }
+    
+    filterPointagesByEquipe(equipe) {
+        if (!equipe) {
+            this.renderPointagesTable(this.data.pointages);
+        } else {
+            this.renderPointagesTable(this.data.pointages.filter(pointage => pointage.equipe === equipe));
+        }
+    }
+    
+    renderAllModules() {
+        this.renderChantiersTable();
+        this.renderSalariesTable();
+        this.renderPointagesTable();
+        this.updateChantierDropdowns();
+        this.updateRecordCounts();
+    }
+    
+    renderChantiersTable(chantiers = this.data.chantiers) {
         const tbody = document.getElementById('chantiers-tbody');
-        const countEl = document.getElementById('chantiers-count');
         if (!tbody) return;
         
-        tbody.innerHTML = this.data.chantiers.map(chantier => `
-            <tr>
+        tbody.innerHTML = '';
+        
+        if (chantiers.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="no-data">Aucun chantier trouvé</td>
+                </tr>
+            `;
+            return;
+        }
+        
+        chantiers.forEach(chantier => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
                 <td>${chantier.num}</td>
                 <td>${chantier.designation}</td>
                 <td>${chantier.chef_chantier}</td>
                 <td>${chantier.adresse}</td>
                 <td>${chantier.utilisateur}</td>
-                <td>
-                    <button class="action-btn" onclick="app.openEditChantierModal(${JSON.stringify(chantier).replace(/"/g, '&quot;')})">✏️</button>
-                    <button class="action-btn delete" onclick="app.deleteItem('chantiers', ${chantier.num})">🗑️</button>
+                <td class="actions-cell">
+                    <button class="btn-action btn-edit" data-num="${chantier.num}" title="Modifier">
+                        <span class="action-icon">✏️</span>
+                    </button>
+                    <button class="btn-action btn-delete" data-num="${chantier.num}" title="Supprimer">
+                        <span class="action-icon">🗑️</span>
+                    </button>
                 </td>
-            </tr>
-        `).join('');
+            `;
+            tbody.appendChild(tr);
+        });
         
-        if (countEl) countEl.textContent = `${this.data.chantiers.length} chantier${this.data.chantiers.length > 1 ? 's' : ''}`;
+        tbody.querySelectorAll('.btn-edit').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const num = parseInt(e.target.closest('[data-num]').dataset.num);
+                const chantier = this.data.chantiers.find(c => c.num === num);
+                if (chantier) this.openEditChantierModal(chantier);
+            });
+        });
+        
+        tbody.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const num = parseInt(e.target.closest('[data-num]').dataset.num);
+                this.deleteItem('chantiers', num);
+            });
+        });
+        
+        this.updateChantierPagination();
     }
     
-    renderSalaries() {
+    renderSalariesTable(salaries = this.data.salaries) {
         const tbody = document.getElementById('salaries-tbody');
-        const countEl = document.getElementById('salaries-count');
         if (!tbody) return;
         
-        tbody.innerHTML = this.data.salaries.map(salarie => `
-            <tr>
+        tbody.innerHTML = '';
+        
+        if (salaries.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="11" class="no-data">Aucun salarié trouvé</td>
+                </tr>
+            `;
+            return;
+        }
+        
+        salaries.forEach(salarie => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
                 <td>${salarie.num_cin}</td>
                 <td>${salarie.nom}</td>
                 <td>${salarie.immatriculation}</td>
@@ -418,24 +743,55 @@ class ManagerProApp {
                 <td>${salarie.chantier}</td>
                 <td>${salarie.equipe}</td>
                 <td>${salarie.date_embauche}</td>
-                <td>${salarie.declarer ? '✓' : '✗'}</td>
-                <td>
-                    <button class="action-btn" onclick="app.openEditSalarieModal(${JSON.stringify(salarie).replace(/"/g, '&quot;')})">✏️</button>
-                    <button class="action-btn delete" onclick="app.deleteItem('salaries', '${salarie.num_cin}')">🗑️</button>
+                <td>${salarie.declarer ? 'Oui' : 'Non'}</td>
+                <td class="actions-cell">
+                    <button class="btn-action btn-edit" data-cin="${salarie.num_cin}" title="Modifier">
+                        <span class="action-icon">✏️</span>
+                    </button>
+                    <button class="btn-action btn-delete" data-cin="${salarie.num_cin}" title="Supprimer">
+                        <span class="action-icon">🗑️</span>
+                    </button>
                 </td>
-            </tr>
-        `).join('');
+            `;
+            tbody.appendChild(tr);
+        });
         
-        if (countEl) countEl.textContent = `${this.data.salaries.length} salarié${this.data.salaries.length > 1 ? 's' : ''}`;
+        tbody.querySelectorAll('.btn-edit').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const cin = e.target.closest('[data-cin]').dataset.cin;
+                const salarie = this.data.salaries.find(s => s.num_cin === cin);
+                if (salarie) this.openEditSalarieModal(salarie);
+            });
+        });
+        
+        tbody.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const cin = e.target.closest('[data-cin]').dataset.cin;
+                this.deleteItem('salaries', cin);
+            });
+        });
+        
+        this.updateSalariesPagination();
     }
     
-    renderPointages() {
+    renderPointagesTable(pointages = this.data.pointages) {
         const tbody = document.getElementById('pointages-tbody');
-        const countEl = document.getElementById('pointages-count');
         if (!tbody) return;
         
-        tbody.innerHTML = this.data.pointages.map(pointage => `
-            <tr>
+        tbody.innerHTML = '';
+        
+        if (pointages.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="13" class="no-data">Aucun pointage trouvé</td>
+                </tr>
+            `;
+            return;
+        }
+        
+        pointages.forEach(pointage => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
                 <td>${pointage.num}</td>
                 <td>${pointage.date}</td>
                 <td>${pointage.nom_et_prenom}</td>
@@ -449,251 +805,219 @@ class ManagerProApp {
                 <td>${pointage.salaire_heure}</td>
                 <td>${pointage.equipe}</td>
                 <td>${pointage.matricule}</td>
-                <td>
-                    <button class="action-btn" onclick="app.openEditPointageModal(${JSON.stringify(pointage).replace(/"/g, '&quot;')})">✏️</button>
-                    <button class="action-btn delete" onclick="app.deleteItem('pointages', ${pointage.num})">🗑️</button>
+                <td class="actions-cell">
+                    <button class="btn-action btn-edit" data-num="${pointage.num}" title="Modifier">
+                        <span class="action-icon">✏️</span>
+                    </button>
+                    <button class="btn-action btn-delete" data-num="${pointage.num}" title="Supprimer">
+                        <span class="action-icon">🗑️</span>
+                    </button>
                 </td>
-            </tr>
-        `).join('');
+            `;
+            tbody.appendChild(tr);
+        });
         
-        if (countEl) countEl.textContent = `${this.data.pointages.length} pointage${this.data.pointages.length > 1 ? 's' : ''}`;
+        tbody.querySelectorAll('.btn-edit').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const num = parseInt(e.target.closest('[data-num]').dataset.num);
+                const pointage = this.data.pointages.find(p => p.num === num);
+                if (pointage) this.openEditPointageModal(pointage);
+            });
+        });
+        
+        tbody.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const num = parseInt(e.target.closest('[data-num]').dataset.num);
+                this.deleteItem('pointages', num);
+            });
+        });
+        
+        this.updatePointagesPagination();
     }
     
     updateChantierDropdowns() {
-        const select1 = document.getElementById('filter-salarie-chantier');
-        const select2 = document.getElementById('filter-pointage-chantier');
-        const options = this.data.chantiers.map(c => `<option value="${c.designation}">${c.designation}</option>`).join('');
-        if (select1) select1.innerHTML = '<option value="">Tous les chantiers</option>' + options;
-        if (select2) select2.innerHTML = '<option value="">Tous les chantiers</option>' + options;
+        const salaireChantierSelect = document.getElementById('filter-salarie-chantier');
+        if (salaireChantierSelect) {
+            salaireChantierSelect.innerHTML = '<option value="">Tous les chantiers</option>' +
+                this.data.chantiers.map(c => `<option value="${c.designation}">${c.designation}</option>`).join('');
+        }
+        
+        const pointageChantierFilter = document.getElementById('filter-pointage-chantier');
+        if (pointageChantierFilter) {
+            pointageChantierFilter.innerHTML = '<option value="">Tous les chantiers</option>' +
+                this.data.chantiers.map(c => `<option value="${c.designation}">${c.designation}</option>`).join('');
+        }
     }
     
-    filterChantiers(query) {
-        const filtered = this.data.chantiers.filter(c => 
-            c.designation.toLowerCase().includes(query.toLowerCase()) ||
-            c.chef_chantier.toLowerCase().includes(query.toLowerCase()) ||
-            c.adresse.toLowerCase().includes(query.toLowerCase())
+    updateRecordCounts() {
+        document.getElementById('chantiers-count')?.textContent = `${this.data.chantiers.length} chantiers`;
+        document.getElementById('salaries-count')?.textContent = `${this.data.salaries.length} salariés`;
+        document.getElementById('pointages-count')?.textContent = `${this.data.pointages.length} pointages`;
+    }
+    
+    updateChantierPagination() {
+        const pagination = document.getElementById('chantiers-pagination');
+        if (!pagination) return;
+        
+        const pageInfo = document.createElement('span');
+        pageInfo.className = 'page-info';
+        pageInfo.textContent = `Affichage de 1 à ${this.data.chantiers.length} sur ${this.data.chantiers.length} entrées`;
+        pagination.innerHTML = '';
+        pagination.appendChild(pageInfo);
+    }
+    
+    updateSalariesPagination() {
+        const pagination = document.getElementById('salaries-pagination');
+        if (!pagination) return;
+        
+        const pageInfo = document.createElement('span');
+        pageInfo.className = 'page-info';
+        pageInfo.textContent = `Affichage de 1 à ${this.data.salaries.length} sur ${this.data.salaries.length} entrées`;
+        pagination.innerHTML = '';
+        pagination.appendChild(pageInfo);
+    }
+    
+    updatePointagesPagination() {
+        const pagination = document.getElementById('pointages-pagination');
+        if (!pagination) return;
+        
+        const pageInfo = document.createElement('span');
+        pageInfo.className = 'page-info';
+        pageInfo.textContent = `Affichage de 1 à ${this.data.pointages.length} sur ${this.data.pointages.length} entrées`;
+        pagination.innerHTML = '';
+        pagination.appendChild(pageInfo);
+    }
+    
+    exportChantiers() {
+        const csv = this.convertToCSV(this.data.chantiers, [
+            { key: 'num', label: 'N°' },
+            { key: 'designation', label: 'Désignation' },
+            { key: 'chef_chantier', label: 'Chef de Chantier' },
+            { key: 'adresse', label: 'Adresse' },
+            { key: 'utilisateur', label: 'Utilisateur' }
+        ]);
+        this.downloadFile(csv, 'chantiers.csv');
+        this.showToast('Chantiers exportés avec succès', 'success');
+    }
+    
+    exportSalaries() {
+        const csv = this.convertToCSV(this.data.salaries, [
+            { key: 'num_cin', label: 'CIN' },
+            { key: 'nom', label: 'Nom' },
+            { key: 'immatriculation', label: 'Immatriculation' },
+            { key: 'num_cnss', label: 'CNSS' },
+            { key: 'num_dossier', label: 'N° Dossier' },
+            { key: 'date_embauche', label: 'Date d\'embauche' },
+            { key: 'situation_familiale', label: 'Situation familiale' },
+            { key: 'nombre_enfant', label: 'Nombre d\'enfants' },
+            { key: 'date_naissance', label: 'Date de naissance' },
+            { key: 'lieu_naissance', label: 'Lieu de naissance' },
+            { key: 'adresse', label: 'Adresse' },
+            { key: 'categorie', label: 'Catégorie' },
+            { key: 'service', label: 'Service' },
+            { key: 'chantier', label: 'Chantier' },
+            { key: 'declarer', label: 'Déclaré' },
+            { key: 'equipe', label: 'Équipe' },
+            { key: 'date_record', label: 'Date d\'enregistrement' }
+        ]);
+        this.downloadFile(csv, 'salaries.csv');
+        this.showToast('Salariés exportés avec succès', 'success');
+    }
+    
+    exportPointages() {
+        const csv = this.convertToCSV(this.data.pointages, [
+            { key: 'num', label: 'N°' },
+            { key: 'date', label: 'Date' },
+            { key: 'nom_et_prenom', label: 'Nom & Prénom' },
+            { key: 'cin', label: 'CIN' },
+            { key: 'chantier', label: 'Chantier' },
+            { key: 'jour', label: 'Jour' },
+            { key: 'heure_supp', label: 'Heures Suppl.' },
+            { key: 'avance', label: 'Avance' },
+            { key: 'type_salarie', label: 'Type Salarié' },
+            { key: 'salaire_de_base', label: 'Salaire Base' },
+            { key: 'salaire_heure', label: 'Salaire Heure' },
+            { key: 'equipe', label: 'Équipe' },
+            { key: 'matricule', label: 'Matricule' }
+        ]);
+        this.downloadFile(csv, 'pointages.csv');
+        this.showToast('Pointages exportés avec succès', 'success');
+    }
+    
+    convertToCSV(data, fields) {
+        const header = fields.map(f => `"${f.label}"`).join(',');
+        const rows = data.map(item => 
+            fields.map(f => {
+                const value = item[f.key] === null || item[f.key] === undefined ? '' : item[f.key];
+                return `"${String(value).replace(/"/g, '""')}"`;
+            }).join(',')
         );
-        this.renderFiltered('chantiers', filtered);
+        return [header, ...rows].join('\n');
     }
     
-    filterSalaries(query) {
-        const filtered = this.data.salaries.filter(s => 
-            s.nom.toLowerCase().includes(query.toLowerCase()) ||
-            s.num_cin.toLowerCase().includes(query.toLowerCase()) ||
-            s.immatriculation.toLowerCase().includes(query.toLowerCase())
-        );
-        this.renderFiltered('salaries', filtered);
+    downloadFile(content, filename) {
+        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
     
-    filterPointages(query) {
-        const filtered = this.data.pointages.filter(p => 
-            p.nom_et_prenom.toLowerCase().includes(query.toLowerCase()) ||
-            p.cin.toLowerCase().includes(query.toLowerCase()) ||
-            p.chantier.toLowerCase().includes(query.toLowerCase())
-        );
-        this.renderFiltered('pointages', filtered);
-    }
-    
-    filterPointagesByDate(date) {
-        if (!date) { this.renderPointages(); return; }
-        const filtered = this.data.pointages.filter(p => p.date === date);
-        this.renderFiltered('pointages', filtered);
-    }
-    
-    filterPointagesByChantier(chantier) {
-        if (!chantier) { this.renderPointages(); return; }
-        const filtered = this.data.pointages.filter(p => p.chantier === chantier);
-        this.renderFiltered('pointages', filtered);
-    }
-    
-    filterPointagesByEquipe(equipe) {
-        if (!equipe) { this.renderPointages(); return; }
-        const filtered = this.data.pointages.filter(p => p.equipe === equipe);
-        this.renderFiltered('pointages', filtered);
-    }
-    
-    filterSalariesByChantier(chantier) {
-        if (!chantier) { this.renderSalaries(); return; }
-        const filtered = this.data.salaries.filter(s => s.chantier === chantier);
-        this.renderFiltered('salaries', filtered);
-    }
-    
-    renderFiltered(module, data) {
-        const methods = {
-            chantiers: (data) => this.renderFilteredChantiers(data),
-            salaries: (data) => this.renderFilteredSalaries(data),
-            pointages: (data) => this.renderFilteredPointages(data)
-        };
-        if (methods[module]) methods[module](data);
-    }
-    
-    renderFilteredChantiers(data) {
-        const tbody = document.getElementById('chantiers-tbody');
-        if (!tbody) return;
-        tbody.innerHTML = data.map(c => `
-            <tr>
-                <td>${c.num}</td>
-                <td>${c.designation}</td>
-                <td>${c.chef_chantier}</td>
-                <td>${c.adresse}</td>
-                <td>${c.utilisateur}</td>
-                <td>
-                    <button class="action-btn" onclick="app.openEditChantierModal(${JSON.stringify(c).replace(/"/g, '&quot;')})">✏️</button>
-                    <button class="action-btn delete" onclick="app.deleteItem('chantiers', ${c.num})">🗑️</button>
-                </td>
-            </tr>
-        `).join('');
-    }
-    
-    renderFilteredSalaries(data) {
-        const tbody = document.getElementById('salaries-tbody');
-        if (!tbody) return;
-        tbody.innerHTML = data.map(s => `
-            <tr>
-                <td>${s.num_cin}</td>
-                <td>${s.nom}</td>
-                <td>${s.immatriculation}</td>
-                <td>${s.num_cnss}</td>
-                <td>${s.categorie}</td>
-                <td>${s.service}</td>
-                <td>${s.chantier}</td>
-                <td>${s.equipe}</td>
-                <td>${s.date_embauche}</td>
-                <td>${s.declarer ? '✓' : '✗'}</td>
-                <td>
-                    <button class="action-btn" onclick="app.openEditSalarieModal(${JSON.stringify(s).replace(/"/g, '&quot;')})">✏️</button>
-                    <button class="action-btn delete" onclick="app.deleteItem('salaries', '${s.num_cin}')">🗑️</button>
-                </td>
-            </tr>
-        `).join('');
-    }
-    
-    renderFilteredPointages(data) {
-        const tbody = document.getElementById('pointages-tbody');
-        if (!tbody) return;
-        tbody.innerHTML = data.map(p => `
-            <tr>
-                <td>${p.num}</td>
-                <td>${p.date}</td>
-                <td>${p.nom_et_prenom}</td>
-                <td>${p.cin}</td>
-                <td>${p.chantier}</td>
-                <td>${p.jour}</td>
-                <td>${p.heure_supp}</td>
-                <td>${p.avance}</td>
-                <td>${p.type_salarie}</td>
-                <td>${p.salaire_de_base}</td>
-                <td>${p.salaire_heure}</td>
-                <td>${p.equipe}</td>
-                <td>${p.matricule}</td>
-                <td>
-                    <button class="action-btn" onclick="app.openEditPointageModal(${JSON.stringify(p).replace(/"/g, '&quot;')})">✏️</button>
-                    <button class="action-btn delete" onclick="app.deleteItem('pointages', ${p.num})">🗑️</button>
-                </td>
-            </tr>
-        `).join('');
-    }
-    
-    exportChantiers() { this.exportToCSV('chantiers', this.data.chantiers); }
-    exportSalaries() { this.exportToCSV('salaries', this.data.salaries); }
-    exportPointages() { this.exportToCSV('pointages', this.data.pointages); }
-    
-    exportToCSV(filename, data) {
-        if (data.length === 0) { this.showToast('No data to export', 'warning'); return; }
-        const headers = Object.keys(data[0]);
-        let csv = headers.join(',') + '\n';
-        data.forEach(row => {
-            csv += headers.map(h => typeof row[h] === 'string' && row[h].includes(',') ? `"${row[h]}"` : row[h]).join(',') + '\n';
+    printModule(module) {
+        document.querySelectorAll('.module-panel').forEach(panel => {
+            panel.style.display = 'none';
         });
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${filename}_${new Date().toISOString().split('T')[0]}.csv`;
-        a.click();
-        window.URL.revokeObjectURL(url);
-        this.showToast(`${filename} exported successfully`, 'success');
+        
+        const panelToPrint = document.getElementById(`panel-${module}`);
+        if (panelToPrint) {
+            panelToPrint.style.display = 'block';
+        }
+        
+        window.print();
+        
+        setTimeout(() => {
+            document.querySelectorAll('.module-panel').forEach(panel => {
+                panel.style.display = '';
+            });
+            
+            document.querySelectorAll('.module-panel').forEach(panel => {
+                const panelId = panel.id.replace('panel-', '');
+                if (panelId !== this.currentTab) {
+                    panel.style.display = 'none';
+                }
+            });
+        }, 500);
     }
-    
-    printModule(module) { window.print(); }
     
     showToast(message, type = 'info') {
-        const container = document.getElementById('toast-container');
-        if (!container) return;
+        const toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) return;
+        
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
-        const icons = { success: '✓', error: '✗', warning: '⚠', info: 'ℹ' };
         toast.innerHTML = `
-            <span class="toast-icon">${icons[type]}</span>
+            <span class="toast-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️'}</span>
             <span class="toast-message">${message}</span>
-            <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            <button class="toast-close" aria-label="Close">&times;</button>
         `;
-        container.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-    }
-    
-    getChantierFormFields(c = null) {
-        const isEdit = !!c;
-        return `
-            <div class="form-group">
-                <label>N°</label>
-                <input type="number" name="num" ${isEdit ? `value="${c.num}" readonly` : ''} required>
-            </div>
-            <div class="form-group">
-                <label>Désignation</label>
-                <input type="text" name="designation" value="${isEdit ? c.designation : ''}" required maxlength="300">
-            </div>
-            <div class="form-group">
-                <label>Chef de Chantier</label>
-                <input type="text" name="chef_chantier" value="${isEdit ? c.chef_chantier : ''}" required maxlength="200">
-            </div>
-            <div class="form-group">
-                <label>Adresse</label>
-                <input type="text" name="adresse" value="${isEdit ? c.adresse : ''}" required maxlength="300">
-            </div>
-            <div class="form-group">
-                <label>Utilisateur</label>
-                <input type="text" name="utilisateur" value="${isEdit ? c.utilisateur : ''}" required maxlength="50">
-            </div>
-        `;
-    }
-    
-    getSalarieFormFields(s = null) {
-        const isEdit = !!s;
-        return `
-            <div class="form-group"><label>CIN</label><input type="text" name="num_cin" value="${isEdit ? s.num_cin : ''}" ${isEdit ? 'readonly' : ''} required></div>
-            <div class="form-group"><label>Nom</label><input type="text" name="nom" value="${isEdit ? s.nom : ''}" required></div>
-            <div class="form-group"><label>Immatriculation</label><input type="text" name="immatriculation" value="${isEdit ? s.immatriculation : ''}"></div>
-            <div class="form-group"><label>CNSS</label><input type="text" name="num_cnss" value="${isEdit ? s.num_cnss : ''}"></div>
-            <div class="form-group"><label>N° Dossier</label><input type="number" name="num_dossier" value="${isEdit ? s.num_dossier : ''}" required></div>
-            <div class="form-group"><label>Date Embauche</label><input type="date" name="date_embauche" value="${isEdit ? s.date_embauche : ''}" required></div>
-            <div class="form-group"><label>Catégorie</label><input type="text" name="categorie" value="${isEdit ? s.categorie : ''}" required></div>
-            <div class="form-group"><label>Service</label><input type="text" name="service" value="${isEdit ? s.service : ''}" required></div>
-            <div class="form-group"><label>Chantier</label><input type="text" name="chantier" value="${isEdit ? s.chantier : ''}" required></div>
-            <div class="form-group"><label>Équipe</label><input type="text" name="equipe" value="${isEdit ? s.equipe : ''}" required></div>
-        `;
-    }
-    
-    getPointageFormFields(p = null) {
-        const isEdit = !!p;
-        return `
-            <div class="form-group"><label>Date</label><input type="date" name="date" value="${isEdit ? p.date : ''}" required></div>
-            <div class="form-group"><label>Nom & Prénom</label><input type="text" name="nom_et_prenom" value="${isEdit ? p.nom_et_prenom : ''}" required></div>
-            <div class="form-group"><label>CIN</label><input type="text" name="cin" value="${isEdit ? p.cin : ''}" required></div>
-            <div class="form-group"><label>Chantier</label><input type="text" name="chantier" value="${isEdit ? p.chantier : ''}" required></div>
-            <div class="form-group"><label>Jour</label><input type="number" name="jour" value="${isEdit ? p.jour : ''}" required></div>
-            <div class="form-group"><label>Heures Supplémentaires</label><input type="number" name="heure_supp" value="${isEdit ? p.heure_supp : ''}" step="0.5"></div>
-            <div class="form-group"><label>Avance</label><input type="number" name="avance" value="${isEdit ? p.avance : ''}" step="0.01"></div>
-            <div class="form-group"><label>Type de Salarié</label><input type="text" name="type_salarie" value="${isEdit ? p.type_salarie : ''}" required></div>
-            <div class="form-group"><label>Salaire Base</label><input type="number" name="salaire_de_base" value="${isEdit ? p.salaire_de_base : ''}" step="0.01" required></div>
-            <div class="form-group"><label>Salaire/Heure</label><input type="number" name="salaire_heure" value="${isEdit ? p.salaire_heure : ''}" step="0.01" required></div>
-            <div class="form-group"><label>Équipe</label><input type="text" name="equipe" value="${isEdit ? p.equipe : ''}" required></div>
-            <div class="form-group"><label>Matricule</label><input type="text" name="matricule" value="${isEdit ? p.matricule : ''}" required></div>
-        `;
+        
+        toastContainer.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3100);
+        
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+            toast.remove();
+        });
     }
 }
 
-let app;
+// Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    app = new ManagerProApp();
+    window.managerProApp = new ManagerProApp();
 });
