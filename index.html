@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Chantier - ManagerPro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss@3.4.1"></script>
+    <link rel="stylesheet" href="css/skeuomorphic.css">
+    <script defer src="js/app.js"></script>
+</head>
+<body class="skeuo-body">
+    <!-- Background texture overlay -->
+    <div class="bg-texture-overlay"></div>
+    
+    <!-- Metallic clipboard frame -->
+    <div class="clipboard-frame">
+        <!-- Top metallic clip -->
+        <div class="metallic-clip">
+            <div class="clip-spring"></div>
+            <div class="clip-arms">
+                <span class="arm left"></span>
+                <span class="arm right"></span>
+            </div>
+        </div>
+        
+        <!-- Leather binder tabs navigation -->
+        <nav class="binder-tabs" role="tablist" aria-label="Modules principaux">
+            <button role="tab" class="binder-tab active" data-tab="chantiers" aria-selected="true" aria-controls="panel-chantiers">
+                <span class="tab-icon">🏗️</span>
+                <span class="tab-label">Chantiers</span>
+                <span class="tab-edge"></span>
+            </button>
+            <button role="tab" class="binder-tab" data-tab="salaries" aria-selected="false" aria-controls="panel-salaries">
+                <span class="tab-icon">👷</span>
+                <span class="tab-label">Salariés</span>
+                <span class="tab-edge"></span>
+            </button>
+            <button role="tab" class="binder-tab" data-tab="pointages" aria-selected="false" aria-controls="panel-pointages">
+                <span class="tab-icon">📋</span>
+                <span class="tab-label">Pointages</span>
+                <span class="tab-edge"></span>
+            </button>
+            <div class="tab-indicator"></div>
+        </nav>
+        
+        <!-- Paper sheet content area -->
+        <main class="paper-sheet" role="main">
+            <!-- Chantiers Panel -->
+            <section role="tabpanel" id="panel-chantiers" class="module-panel active" aria-labelledby="tab-chantiers">
+                <header class="panel-header">
+                    <h1 class="panel-title embossed-text">Chantiers</h1>
+                    <div class="header-actions">
+                        <button class="btn-stamp btn-primary" id="btn-add-chantier" aria-label="Ajouter un chantier">
+                            <span class="stamp-icon">➕</span>
+                            <span class="stamp-text">Nouveau</span>
+                        </button>
+                        <button class="btn-stamp btn-secondary" id="btn-export-chantiers" aria-label="Exporter les chantiers">
+                            <span class="stamp-icon">📤</span>
+                            <span class="stamp-text">Exporter</span>
+                        </button>
+                        <button class="btn-stamp btn-print" id="btn-print-chantiers" aria-label="Imprimer les chantiers">
+                            <span class="stamp-icon">🖨️</span>
+                            <span class="stamp-text">Imprimer</span>
+                        </button>
+                    </div>
+                </header>
+                
+                <!-- Search/Filter Panel -->
+                <div class="filter-panel leather-panel">
+                    <div class="filter-row">
+                        <div class="input-group tactile-input">
+                            <label for="search-chantier" class="sr-only">Rechercher un chantier</label>
+                            <input type="text" id="search-chantier" placeholder="🔍 Rechercher par désignation, chef ou adresse..." class="ledger-input">
+                            <span class="input-border"></span>
+                        </div>
+                        <select id="filter-chantier-statut" class="tactile-select ledger-select">
+                            <option value="">Tous les statuts</option>
+                            <option value="actif">Actifs</option>
+                            <option value="termine">Terminés</option>
+                            <option value="planifie">Planifiés</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Data Table in Ledger Frame -->
+                <div class="ledger-frame">
+                    <div class="ledger-header">
+                        <div class="ledger-binding">
+                            <span class="binding-hole"></span>
+                            <span class="binding-hole"></span>
+                            <span class="binding-hole"></span>
+                        </div>
+                        <h2 class="ledger-title embossed-text">Registre des Chantiers</h2>
+                    </div>
+                    <div class="ledger-lines">
+                        <table class="ledger-table" role="grid" aria-label="Liste des chantiers">
+                            <thead class="sticky-header">
+                                <tr>
+                                    <th scope="col">N°</th>
+                                    <th scope="col">Désignation</th>
+                                    <th scope="col">Chef de Chantier</th>
+                                    <th scope="col">Adresse</th>
+                                    <th scope="col">Utilisateur</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="chantiers-tbody">
+                                <!-- Rows inserted by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="ledger-footer">
+                        <span class="record-count" id="chantiers-count">0 chantiers</span>
+                        <div class="pagination tactile-pagination" id="chantiers-pagination"></div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Salariés Panel -->
+            <section role="tabpanel" id="panel-salaries" class="module-panel" aria-labelledby="tab-salaries" hidden>
+                <header class="panel-header">
+                    <h1 class="panel-title embossed-text">Salariés</h1>
+                    <div class="header-actions">
+                        <button class="btn-stamp btn-primary" id="btn-add-salarie" aria-label="Ajouter un salarié">
+                            <span class="stamp-icon">➕</span>
+                            <span class="stamp-text">Nouveau</span>
+                        </button>
+                        <button class="btn-stamp btn-secondary" id="btn-export-salaries" aria-label="Exporter les salariés">
+                            <span class="stamp-icon">📤</span>
+                            <span class="stamp-text">Exporter</span>
+                        </button>
+                        <button class="btn-stamp btn-print" id="btn-print-salaries" aria-label="Imprimer les salariés">
+                            <span class="stamp-icon">🖨️</span>
+                            <span class="stamp-text">Imprimer</span>
+                        </button>
+                    </div>
+                </header>
+                
+                <div class="filter-panel leather-panel">
+                    <div class="filter-row">
+                        <div class="input-group tactile-input">
+                            <label for="search-salarie" class="sr-only">Rechercher un salarié</label>
+                            <input type="text" id="search-salarie" placeholder="🔍 Rechercher par nom, CIN, matricule..." class="ledger-input">
+                            <span class="input-border"></span>
+                        </div>
+                        <select id="filter-salarie-chantier" class="tactile-select ledger-select">
+                            <option value="">Tous les chantiers</option>
+                        </select>
+                        <select id="filter-salarie-categorie" class="tactile-select ledger-select">
+                            <option value="">Toutes catégories</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="ledger-frame">
+                    <div class="ledger-header">
+                        <div class="ledger-binding">
+                            <span class="binding-hole"></span>
+                            <span class="binding-hole"></span>
+                            <span class="binding-hole"></span>
+                        </div>
+                        <h2 class="ledger-title embossed-text">Registre du Personnel</h2>
+                    </div>
+                    <div class="ledger-lines">
+                        <table class="ledger-table" role="grid" aria-label="Liste des salariés">
+                            <thead class="sticky-header">
+                                <tr>
+                                    <th scope="col">CIN</th>
+                                    <th scope="col">Nom</th>
+                                    <th scope="col">Immatriculation</th>
+                                    <th scope="col">CNSS</th>
+                                    <th scope="col">Catégorie</th>
+                                    <th scope="col">Service</th>
+                                    <th scope="col">Chantier</th>
+                                    <th scope="col">Équipe</th>
+                                    <th scope="col">Date Embauche</th>
+                                    <th scope="col">Déclaré</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salaries-tbody">
+                                <!-- Rows inserted by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="ledger-footer">
+                        <span class="record-count" id="salaries-count">0 salariés</span>
+                        <div class="pagination tactile-pagination" id="salaries-pagination"></div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Pointages Panel -->
+            <section role="tabpanel" id="panel-pointages" class="module-panel" aria-labelledby="tab-pointages" hidden>
+                <header class="panel-header">
+                    <h1 class="panel-title embossed-text">Pointages</h1>
+                    <div class="header-actions">
+                        <button class="btn-stamp btn-primary" id="btn-add-pointage" aria-label="Ajouter un pointage">
+                            <span class="stamp-icon">➕</span>
+                            <span class="stamp-text">Nouveau</span>
+                        </button>
+                        <button class="btn-stamp btn-secondary" id="btn-export-pointages" aria-label="Exporter les pointages">
+                            <span class="stamp-icon">📤</span>
+                            <span class="stamp-text">Exporter</span>
+                        </button>
+                        <button class="btn-stamp btn-print" id="btn-print-pointages" aria-label="Imprimer les pointages">
+                            <span class="stamp-icon">🖨️</span>
+                            <span class="stamp-text">Imprimer</span>
+                        </button>
+                    </div>
+                </header>
+                
+                <div class="filter-panel leather-panel">
+                    <div class="filter-row">
+                        <div class="input-group tactile-input">
+                            <label for="search-pointage" class="sr-only">Rechercher un pointage</label>
+                            <input type="text" id="search-pointage" placeholder="🔍 Rechercher par nom, CIN, chantier..." class="ledger-input">
+                            <span class="input-border"></span>
+                        </div>
+                        <input type="date" id="filter-pointage-date" class="tactile-date ledger-input">
+                        <select id="filter-pointage-chantier" class="tactile-select ledger-select">
+                            <option value="">Tous les chantiers</option>
+                        </select>
+                        <select id="filter-pointage-equipe" class="tactile-select ledger-select">
+                            <option value="">Toutes les équipes</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="ledger-frame">
+                    <div class="ledger-header">
+                        <div class="ledger-binding">
+                            <span class="binding-hole"></span>
+                            <span class="binding-hole"></span>
+                            <span class="binding-hole"></span>
+                        </div>
+                        <h2 class="ledger-title embossed-text">Journal des Présences</h2>
+                    </div>
+                    <div class="ledger-lines">
+                        <table class="ledger-table" role="grid" aria-label="Liste des pointages">
+                            <thead class="sticky-header">
+                                <tr>
+                                    <th scope="col">N°</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Nom & Prénom</th>
+                                    <th scope="col">CIN</th>
+                                    <th scope="col">Chantier</th>
+                                    <th scope="col">Jour</th>
+                                    <th scope="col">Heures Suppl.</th>
+                                    <th scope="col">Avance</th>
+                                    <th scope="col">Type Salarié</th>
+                                    <th scope="col">Salaire Base</th>
+                                    <th scope="col">Salaire Heure</th>
+                                    <th scope="col">Équipe</th>
+                                    <th scope="col">Matricule</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pointages-tbody">
+                                <!-- Rows inserted by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="ledger-footer">
+                        <span class="record-count" id="pointages-count">0 pointages</span>
+                        <div class="pagination tactile-pagination" id="pointages-pagination"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Bottom leather strap -->
+        <div class="leather-strap-bottom"></div>
+    </div>
+    
+    <!-- Modal Overlay -->
+    <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+        <div class="modal-paper" role="document">
+            <div class="modal-clip"></div>
+            <header class="modal-header">
+                <h2 id="modal-title" class="embossed-text"></h2>
+                <button class="modal-close tactile-btn" id="modal-close" aria-label="Fermer">×</button>
+            </header>
+            <form id="modal-form" class="modal-form" novalidate>
+                <div class="form-grid" id="form-fields">
+                    <!-- Fields inserted dynamically -->
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-stamp btn-secondary tactile-btn" id="btn-cancel">Annuler</button>
+                    <button type="submit" class="btn-stamp btn-primary tactile-btn" id="btn-submit">
+                        <span class="stamp-icon">✓</span>
+                        <span class="stamp-text" id="btn-submit-text">Enregistrer</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container" aria-live="polite"></div>
+    
+    <!-- Print/Export Styles -->
+    <style id="print-styles" media="print">
+        @page { margin: 2cm; size: A4 landscape; }
+        .clipboard-frame { box-shadow: none; border: none; max-width: none; }
+        .binder-tabs, .panel-header, .filter-panel, .ledger-binding, .ledger-footer, .modal-overlay, .leather-strap-bottom, .metallic-clip { display: none !important; }
+        .paper-sheet { background: white; padding: 0; }
+        .module-panel { display: block !important; }
+        .ledger-frame { border: 2px solid #2d2d2d; }
+        .ledger-table { font-size: 10px; }
+        .ledger-table th, .ledger-table td { padding: 4px 6px; border: 1px solid #ccc; }
+        .ledger-table th { background: #f0f0f0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .no-print { display: none !important; }
+    </style>
+</body>
+</html>
